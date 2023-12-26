@@ -2,19 +2,18 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bloc_pagination/cubit/posts_cubit.dart';
+import 'package:flutter_bloc_pagination/bloc/posts_flutter_bloc.dart';
 import 'package:flutter_bloc_pagination/data/models/post.dart';
 
-class PostsView extends StatelessWidget {
+class PostsBlocView extends StatelessWidget {
   final scrollController = ScrollController();
-
-  PostsView({super.key});
+  PostsBlocView({super.key});
 
   void setupScrollController(context) {
     scrollController.addListener(() {
       if (scrollController.position.atEdge) {
         if (scrollController.position.pixels != 0) {
-          BlocProvider.of<PostsCubit>(context).loadPosts();
+          BlocProvider.of<PostsFlutterBloc>(context).add(LoadPostsEvent());
         }
       }
     });
@@ -23,30 +22,29 @@ class PostsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     setupScrollController(context);
-    BlocProvider.of<PostsCubit>(context).loadPosts();
-
+    BlocProvider.of<PostsFlutterBloc>(context).add(LoadPostsEvent());
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Paginated Posts using Cubit"),
+        title: const Text("Paginated Posts Using Bloc"),
       ),
       body: _postList(),
     );
   }
 
   Widget _postList() {
-    return BlocBuilder<PostsCubit, PostsState>(
+    return BlocBuilder<PostsFlutterBloc, PostsFlutterState>(
       builder: (context, state) {
-        if (state is PostsLoading && state.isFirstFetch) {
+        if (state is PostsFlutterStateLoading && state.isFirstFetch) {
           return _loadingIndicator();
         }
 
         List<Post> posts = [];
         bool isLoading = false;
 
-        if (state is PostsLoading) {
+        if (state is PostsFlutterStateLoading) {
           posts = state.oldPosts;
           isLoading = true;
-        } else if (state is PostsLoaded) {
+        } else if (state is PostsFlutterStateLoaded) {
           posts = state.posts;
         }
 
