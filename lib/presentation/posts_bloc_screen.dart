@@ -48,25 +48,46 @@ class PostsBlocView extends StatelessWidget {
           posts = state.posts;
         }
 
-        return ListView.separated(
-          controller: scrollController,
-          itemBuilder: (context, index) {
-            if (index < posts.length) {
-              return _post(posts[index], context);
-            } else {
-              Timer(const Duration(milliseconds: 30), () {
-                scrollController.jumpTo(scrollController.position.maxScrollExtent);
-              });
+        return Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Count: 345',
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text(
+                    'Verify',
+                  ),
+                ),
+              ],
+            ),
+            Expanded(
+              child: ListView.separated(
+                shrinkWrap: true,
+                controller: scrollController,
+                itemBuilder: (context, index) {
+                  if (index < posts.length) {
+                    return _post(posts[index], context);
+                  } else {
+                    Timer(const Duration(milliseconds: 30), () {
+                      scrollController.jumpTo(scrollController.position.maxScrollExtent);
+                    });
 
-              return _loadingIndicator();
-            }
-          },
-          separatorBuilder: (context, index) {
-            return Divider(
-              color: Colors.grey[400],
-            );
-          },
-          itemCount: posts.length + (isLoading ? 1 : 0),
+                    return _loadingIndicator();
+                  }
+                },
+                separatorBuilder: (context, index) {
+                  return Divider(
+                    color: Colors.grey[400],
+                  );
+                },
+                itemCount: posts.length + (isLoading ? 1 : 0),
+              ),
+            ),
+          ],
         );
       },
     );
